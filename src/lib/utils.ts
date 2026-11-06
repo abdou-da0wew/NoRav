@@ -25,7 +25,7 @@ export function getProxyOrigin(): string {
   const host = window.location.hostname.includes(":")
     ? `[${window.location.hostname}]`
     : window.location.hostname;
-  return `${window.location.protocol}//${host}:7846`;
+  return `${window.location.protocol}//${host}:8099`;
 }
 
 export function makeProxyURL(target: string): string {

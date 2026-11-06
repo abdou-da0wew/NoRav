@@ -117,6 +117,9 @@ func upstreamHost(r *http.Request) string {
 		raw = r.Header.Get("X-NoRav-Target")
 	}
 	if raw == "" {
+		if destination, ok := destinationFromEnginePath(r.URL.Path, r.URL.RawQuery); ok {
+			return strings.ToLower(destination.Hostname())
+		}
 		return ""
 	}
 	parsed, err := url.Parse(raw)

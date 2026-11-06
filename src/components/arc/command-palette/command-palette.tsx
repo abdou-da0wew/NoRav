@@ -11,7 +11,7 @@ import { motionTokens } from "../lib/motion-tokens";
 import styles from "./command-palette.module.css";
 
 export interface CommandItem { id: string; label: string; description?: string; group?: string; keywords?: string[]; icon?: ReactNode; shortcut?: string; }
-export interface CommandPaletteProps { items: CommandItem[]; placeholder?: string; onSelect?: (item: CommandItem) => void; onClose?: () => void; label?: string; /** Focus the search field on mount, for a palette that opens on demand. */ autoFocus?: boolean; }
+export interface CommandPaletteProps { items: CommandItem[]; placeholder?: string; onSelect?: (item: CommandItem) => void; onClose?: () => void; label?: string; /** Focus the search field on mount, for a palette that opens on demand. */ autoFocus?: boolean; /** Remove the standalone panel chrome when hosted inside a Dialog. */ embedded?: boolean; }
 
 const enter: Transition = { duration: motionTokens.duration.standard, ease: [...motionTokens.ease.enter] };
 const leave: Transition = { duration: motionTokens.duration.instant, ease: [...motionTokens.ease.standard] };
@@ -92,7 +92,7 @@ function Highlighted({ text, ranges }: { text: string; ranges: Range[] }) {
 /** "⌘ K" or "Shift+D" becomes one keycap per key. */
 const keysOf = (shortcut: string) => shortcut.split(/\s+|\+(?=.)/).filter(Boolean);
 
-export function CommandPalette({ items, placeholder = "Search commands", onSelect, onClose, label = "Command palette", autoFocus = false }: CommandPaletteProps) {
+export function CommandPalette({ items, placeholder = "Search commands", onSelect, onClose, label = "Command palette", autoFocus = false, embedded = false }: CommandPaletteProps) {
   const inputId = useId();
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
@@ -194,7 +194,7 @@ export function CommandPalette({ items, placeholder = "Search commands", onSelec
     }
   }
 
-  return <motion.div className={styles.palette} initial={reduced ? false : { opacity: 0, y: 6, scale: .98 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={reduced ? { duration: 0 } : { default: motionTokens.spring.smooth, opacity: { duration: motionTokens.duration.fast, ease: [...motionTokens.ease.enter] } }}>
+  return <motion.div className={[styles.palette, embedded ? styles.embedded : ""].filter(Boolean).join(" ")} initial={reduced ? false : { opacity: 0, y: 6, scale: .98 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={reduced ? { duration: 0 } : { default: motionTokens.spring.smooth, opacity: { duration: motionTokens.duration.fast, ease: [...motionTokens.ease.enter] } }}>
     <div className={styles.searchRow}>
       <span className={styles.searchIcon}><Search width={18} height={18} strokeWidth={1.75} aria-hidden="true"/></span>
       <label className={styles.visuallyHidden} htmlFor={inputId}>{label}</label>

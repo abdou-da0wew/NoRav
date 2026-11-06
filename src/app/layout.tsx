@@ -8,6 +8,7 @@ import { SlidersHorizontal } from "@phosphor-icons/react/SlidersHorizontal";
 import { Sun } from "@phosphor-icons/react/Sun";
 import { Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { Button } from "@/components/arc/button/button";
+import { Dialog, DialogContent } from "@/components/arc/dialog/dialog";
 import ThemeSwitch from "@/components/arc/theme-switch/theme-switch";
 import type { CommandItem } from "@/components/arc/command-palette/command-palette";
 import { BootScreen, Brand } from "@/app/brand";
@@ -108,7 +109,27 @@ function Workspace() {
       </header>
 
       <main className="workspace-content"><Outlet /></main>
-      {role === "owner" && open && <Suspense fallback={null}><CommandPalette items={commands} placeholder="Search NoRav or run a command..." onSelect={selectCommand} onClose={() => setOpen(false)} autoFocus /></Suspense>}
+      {role === "owner" && (
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogContent
+            title="Quick commands"
+            description="Search NoRav or run an action."
+            className="command-dialog-content"
+            bodyClassName="command-dialog-body"
+          >
+            <Suspense fallback={null}>
+              <CommandPalette
+                items={commands}
+                placeholder="Search NoRav or run a command..."
+                onSelect={selectCommand}
+                onClose={() => setOpen(false)}
+                autoFocus
+                embedded
+              />
+            </Suspense>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }

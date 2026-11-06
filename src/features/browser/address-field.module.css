@@ -1,0 +1,118 @@
+.field {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  align-items: center;
+}
+
+.label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+  border: 0;
+}
+
+.control {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  align-items: center;
+  gap: 11px;
+}
+
+.leadingIcon {
+  display: grid;
+  width: 19px;
+  height: 19px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: var(--nr-dim);
+  transition: color 160ms ease;
+}
+
+.field:focus-within .leadingIcon,
+.field[data-filled="true"] .leadingIcon {
+  color: var(--nr-text);
+}
+
+.input {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  flex: 1 1 auto;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--nr-text);
+  font: inherit;
+  line-height: 1.35;
+  appearance: none;
+}
+
+.field[data-variant="toolbar"] .input {
+  font-size: 12px;
+}
+
+.field[data-variant="hero"] .input {
+  font-size: 13px;
+}
+
+.input::placeholder {
+  color: var(--nr-muted);
+  opacity: 0.86;
+}
+
+.input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.clearSlot {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  place-items: center;
+}
+
+.clearButton {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--nr-muted);
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .clearButton:hover {
+    background: var(--nr-panel-raised);
+    color: var(--nr-text);
+  }
+}
+
+.clearButton:focus-visible {
+  outline: 2px solid var(--nr-amber);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .leadingIcon,
+  .clearButton {
+    transition: none;
+  }
+}

@@ -12,7 +12,7 @@ ExecStart=/usr/bin/node /home/celestial-dev/NoRav/proxy-engine/dist/src/index.js
 Environment=NODE_ENV=production
 Environment=NODE_OPTIONS=--max-http-header-size=131072
 Environment=NORAV_ACCESS_KEY_FILE=/home/celestial-dev/NoRav/data/access.key
-Environment=NORAV_PUBLIC_ORIGIN=http://5.83.153.107:7846
+Environment=NORAV_PUBLIC_ORIGIN=https://celestial-bot.work.gd:8099
 Environment=NORAV_ENGINE_PROXY_PORT=17860
 Environment=NORAV_ENGINE_CROSS_PORT=17861
 Environment=NORAV_ENGINE_CONTROL_PORT=17862

@@ -31,7 +31,7 @@ function parsePort(name: string, fallback: number): number {
 }
 
 function parsePublicOrigin(raw: string | undefined): URL {
-  const value = raw ?? "http://127.0.0.1:7846";
+  const value = raw ?? "http://127.0.0.1:8099";
   let origin: URL;
 
   try {

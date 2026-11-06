@@ -8,6 +8,13 @@
   transform-origin: top center;
 }
 
+.embedded {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
 .searchRow {
   position: relative;
   display: flex;

@@ -1,15 +1,15 @@
 # NoRav
 
-NoRav is a self-hosted, browser-style web proxy. The dashboard is a React 19 + Vite app. A Go service handles authentication, session policy, TLS, and the public HTTP gateway; a separate TypeScript/Node.js sidecar uses TestCafe Hammerhead to rewrite destination pages and browser requests. It is designed to be opened directly by IP address from an ordinary browser.
+NoRav is a self-hosted, browser-style web proxy. The dashboard is a React 19 + Vite app. A Go service handles authentication, session policy, TLS, and the public HTTP gateway; a separate TypeScript/Node.js sidecar uses TestCafe Hammerhead to rewrite destination pages and browser requests. The VDS deployment exposes it through a trusted HTTPS hostname, with Nginx terminating TLS before the loopback-only Go gateway.
 
 ## Runtime addresses
 
 The current VDS deployment uses two ports because the machine already has Nginx listening on ports 80 and 443:
 
-- Dashboard: `http://5.83.153.107:7845`
-- Proxied websites: `http://5.83.153.107:7846`
+- Dashboard: `https://celestial-bot.work.gd:7845`
+- Proxied websites: `https://celestial-bot.work.gd:8099`
 
-The dashboard and proxy use different browser origins. This keeps a website rendered in the proxy iframe from directly reading the NoRav dashboard's DOM or storage. Both ports are on the same host, so the HttpOnly session cookie can be sent to the proxy origin.
+The dashboard and proxy use different browser origins. This keeps a website rendered in the proxy iframe from directly reading the NoRav dashboard's DOM or storage. Both ports share the same hostname, so the host-only HttpOnly session cookie can be sent to the proxy origin without exposing it to destination websites.
 
 ## Development and build
 
@@ -33,16 +33,20 @@ install -m 0644 deploy/norav-proxy-engine.service ~/.config/systemd/user/norav-p
 install -m 0644 deploy/norav.service ~/.config/systemd/user/norav.service
 systemctl --user daemon-reload
 systemctl --user enable --now norav-proxy-engine.service norav.service
+sudo install -o root -g root -m 0644 deploy/norav-nginx.conf /etc/nginx/conf.d/norav.conf
+sudo nginx -t && sudo systemctl reload nginx
 journalctl --user -u norav-proxy-engine.service -u norav.service -f
 ```
 
-The engine binds only to loopback. `NORAV_PUBLIC_ORIGIN` in `norav-proxy-engine.service` must match the externally visible proxy origin exactly, including scheme, hostname/IP, and port. The current HTTP deployment uses `http://5.83.153.107:7846`; update it when the public proxy origin or TLS configuration changes. The Go service depends on the engine unit and connects to its loopback proxy and control ports.
+The TypeScript engine and Go gateway bind only to loopback. Nginx terminates TLS on `7845` (dashboard) and `8099` (proxy), using the existing Let's Encrypt certificate for `celestial-bot.work.gd`. The public proxy origin in `norav-proxy-engine.service` must match the externally visible HTTPS proxy origin exactly. The Go service trusts forwarded host/protocol headers only from loopback and sets secure session cookies. The Go service connects to the engine's loopback proxy and control ports.
 
 ## Run
 
 ```bash
-NORAV_UI_ADDR=0.0.0.0:7845 \
-NORAV_PROXY_ADDR=0.0.0.0:7846 \
+NORAV_UI_ADDR=127.0.0.1:17845 \
+NORAV_PROXY_ADDR=127.0.0.1:17899 \
+NORAV_PUBLIC_PROXY_PORT=8099 \
+NORAV_SECURE_COOKIE=true \
 NORAV_IO_URING=auto \
 ./norav
 ```
@@ -57,13 +61,15 @@ Set `NORAV_ACCESS_KEY` to provide your own key, or `NORAV_ACCESS_KEY_FILE` to ch
 
 ## TLS
 
-The Go server supports a certificate and private key on both listeners:
+For a direct Go TLS deployment (without Nginx), the Go server supports a certificate and private key on both listeners:
 
 ```bash
 NORAV_TLS_CERT_FILE=/path/to/fullchain.pem \
 NORAV_TLS_KEY_FILE=/path/to/privkey.pem \
-NORAV_UI_ADDR=0.0.0.0:7845 \
-NORAV_PROXY_ADDR=0.0.0.0:7846 \
+NORAV_UI_ADDR=127.0.0.1:17845 \
+NORAV_PROXY_ADDR=127.0.0.1:17899 \
+NORAV_PUBLIC_PROXY_PORT=8099 \
+NORAV_SECURE_COOKIE=true \
 ./norav
 ```
 
@@ -78,7 +84,8 @@ Let's Encrypt supports publicly trusted IP-address certificates via Certbot 5.4+
 | Variable | Default | Purpose |
 |---|---|---|
 | `NORAV_UI_ADDR` | `0.0.0.0:7845` | Dashboard listener |
-| `NORAV_PROXY_ADDR` | `0.0.0.0:7846` | Public proxy gateway listener |
+| `NORAV_PROXY_ADDR` | `0.0.0.0:8099` | Proxy gateway listener (bind to loopback behind TLS termination) |
+| `NORAV_PUBLIC_PROXY_PORT` | `8099` | Public HTTPS proxy port used to validate generated engine URLs |
 | `NORAV_ENGINE_PROXY_ADDR` | `127.0.0.1:17860` | Internal Hammerhead proxy listener |
 | `NORAV_ENGINE_CONTROL_ADDR` | `127.0.0.1:17862` | Internal engine control API |
 | `NORAV_ENGINE_PROXY_PORT` | `17860` | TypeScript engine HTTP listener |

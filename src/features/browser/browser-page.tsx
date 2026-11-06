@@ -12,7 +12,7 @@ import { WifiHigh } from "@phosphor-icons/react/WifiHigh";
 import { Lightning } from "@phosphor-icons/react/Lightning";
 import { motion } from "motion/react";
 import { Button } from "@/components/arc/button/button";
-import { SearchField } from "@/components/arc/search-field/search-field";
+import { AddressField } from "./address-field";
 import { useApp } from "@/app/context";
 import { createProxySession } from "@/lib/api";
 import { normalizeDestination, shortHost } from "@/lib/utils";
@@ -211,7 +211,9 @@ export function BrowserPage() {
           <div className="address-security">
             <ShieldCheck size={15} />
           </div>
-          <SearchField
+          <AddressField
+            className="toolbar-address-field"
+            variant="toolbar"
             label="Website address"
             value={address}
             onValueChange={setAddress}
@@ -316,10 +318,24 @@ export function BrowserPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, ease: [0.2, 0.8, 0.2, 1] }}
           >
-            <div className="home-emblem">
-              <span className="emblem-orbit orbit-one" />
-              <span className="emblem-orbit orbit-two" />
-              <span className="emblem-core" />
+            <div className="home-emblem" aria-hidden="true">
+              <svg viewBox="0 0 80 80" role="presentation" focusable="false">
+                <defs>
+                  <linearGradient id="norav-proton-orbit" x1="12" y1="14" x2="68" y2="66" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#F2B95D" />
+                    <stop offset="1" stopColor="#A875FF" />
+                  </linearGradient>
+                </defs>
+                <g fill="none" stroke="url(#norav-proton-orbit)" strokeWidth="1.35">
+                  <ellipse cx="40" cy="40" rx="28" ry="11" />
+                  <ellipse cx="40" cy="40" rx="28" ry="11" transform="rotate(60 40 40)" />
+                  <ellipse cx="40" cy="40" rx="28" ry="11" transform="rotate(120 40 40)" />
+                </g>
+                <circle cx="40" cy="40" r="5.2" fill="var(--nr-amber)" />
+                <circle cx="68" cy="40" r="2.2" fill="#F2B95D" />
+                <circle cx="26" cy="16" r="2.2" fill="#C49AFF" />
+                <circle cx="26" cy="64" r="2.2" fill="#A875FF" />
+              </svg>
             </div>
             <h1>
               Go <em>wherever</em>
@@ -332,7 +348,10 @@ export function BrowserPage() {
               One address. Your own way through.
             </p>
             <form className="home-search" onSubmit={submit}>
-              <SearchField
+              <AddressField
+                className="home-address-field"
+                variant="hero"
+                leadingIcon={<MagnifyingGlass size={18} />}
                 label="Search or enter a website address"
                 value={address}
                 onValueChange={setAddress}

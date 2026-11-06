@@ -84,21 +84,34 @@ func (a *app) validEngineURL(r *http.Request, raw, engineID string) bool {
 		return false
 	}
 	scheme := "http"
-	if r.TLS != nil || strings.EqualFold(r.Header.Get("X-Forwarded-Proto"), "https") {
+	host := r.Host
+	if r.TLS != nil {
 		scheme = "https"
+	}
+	if remoteIP(r.RemoteAddr).IsLoopback() {
+		forwardedProto := strings.TrimSpace(r.Header.Get("X-Forwarded-Proto"))
+		if forwardedProto == "http" || forwardedProto == "https" {
+			scheme = forwardedProto
+		}
+		if forwardedHost := strings.TrimSpace(r.Header.Get("X-Forwarded-Host")); forwardedHost != "" {
+			host = forwardedHost
+		}
 	}
 	if parsed.Scheme != scheme {
 		return false
-	}
-	host := r.Host
-	if forwarded := strings.TrimSpace(r.Header.Get("X-Forwarded-Host")); forwarded != "" && remoteIP(r.RemoteAddr).IsLoopback() {
-		host = forwarded
 	}
 	hostname, _, err := net.SplitHostPort(host)
 	if err != nil {
 		hostname = strings.Trim(host, "[]")
 	}
-	expectedHost := net.JoinHostPort(hostname, portOf(a.cfg.proxyAddr))
+	if hostname == "" {
+		return false
+	}
+	publicPort := a.cfg.publicProxyPort
+	if publicPort == "" {
+		publicPort = portOf(a.cfg.proxyAddr)
+	}
+	expectedHost := net.JoinHostPort(hostname, publicPort)
 	if !strings.EqualFold(parsed.Host, expectedHost) {
 		return false
 	}
@@ -304,6 +317,7 @@ func newEngineProxy(addr string) (*httputil.ReverseProxy, error) {
 	}
 	proxy.FlushInterval = -1
 	proxy.ModifyResponse = func(response *http.Response) error {
+		normalizeProxyResponseHeaders(response.Header)
 		response.Header.Del("X-Frame-Options")
 		for _, name := range []string{"Content-Security-Policy", "Content-Security-Policy-Report-Only"} {
 			values := response.Header.Values(name)
@@ -324,6 +338,31 @@ func newEngineProxy(addr string) (*httputil.ReverseProxy, error) {
 		http.Error(w, "The browsing engine could not complete this request.", http.StatusBadGateway)
 	}
 	return proxy, nil
+}
+
+// normalizeProxyResponseHeaders removes destination isolation policies that are
+// invalid after Hammerhead maps unrelated destinations onto one browser origin.
+// OAC is explicitly kept site-keyed for every proxied response to avoid mixing
+// origin-keyed and site-keyed agent clusters on NoRav's shared proxy origin.
+func normalizeProxyResponseHeaders(header http.Header) {
+	for _, name := range []string{
+		"Cross-Origin-Opener-Policy",
+		"Cross-Origin-Opener-Policy-Report-Only",
+		"Cross-Origin-Embedder-Policy",
+		"Cross-Origin-Embedder-Policy-Report-Only",
+		"Cross-Origin-Resource-Policy",
+		"Strict-Transport-Security",
+		"Alt-Svc",
+		"Clear-Site-Data",
+		"Report-To",
+		"Reporting-Endpoints",
+		"Nel",
+		"Origin-Trial",
+		"Critical-Origin-Trial",
+	} {
+		header.Del(name)
+	}
+	header.Set("Origin-Agent-Cluster", "?0")
 }
 
 func stripFrameAncestorsDirective(policy string) string {

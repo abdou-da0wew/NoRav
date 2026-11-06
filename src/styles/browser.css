@@ -35,58 +35,41 @@
 .address-form {
   display: flex;
   min-width: 0;
-  height: 41px;
+  height: 44px;
   flex: 1 1 auto;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   padding: 0 7px 0 12px;
   border: 1px solid var(--nr-line);
   border-radius: 12px;
   background: var(--nr-bg);
 }
 .address-security {
-  display: flex;
-  flex: 0 0 auto;
+  display: grid;
+  width: 19px;
+  height: 19px;
+  flex: 0 0 19px;
+  place-items: center;
   color: var(--nr-green);
 }
-.address-form .field {
+.address-form .toolbar-address-field {
+  height: 100%;
   min-width: 0;
   flex: 1 1 auto;
-  gap: 0;
-}
-.address-form .field label {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-}
-.address-form .shell {
-  min-height: 36px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-}
-.address-form .shell:focus-within {
-  border-color: transparent;
-}
-.address-form .shell > svg {
-  display: none;
-}
-.address-form .input {
-  padding: 0;
-  color: var(--nr-text);
-  font-size: 12px;
-}
-.address-form .clearSlot {
-  width: 22px;
 }
 .address-go {
-  min-height: 29px !important;
-  padding: 0 12px !important;
+  display: inline-flex !important;
+  min-width: 66px;
+  min-height: 30px !important;
+  height: 30px !important;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  align-self: center;
+  padding: 0 11px !important;
   border-radius: 9px !important;
   font-size: 11px !important;
+  line-height: 1 !important;
 }
 .browser-tools {
   padding-left: 1px;
@@ -126,33 +109,18 @@
   text-align: center;
 }
 .home-emblem {
-  position: relative;
+  display: grid;
   width: 68px;
   height: 68px;
+  place-items: center;
   margin-bottom: 24px;
 }
-.emblem-orbit {
-  position: absolute;
-  inset: 5px;
-  border: 1px solid rgba(242, 185, 93, 0.32);
-  border-radius: 50%;
-  transform: rotate(-35deg) scaleY(0.56);
-}
-.orbit-two {
-  inset: 5px;
-  transform: rotate(55deg) scaleY(0.56);
-  border-color: rgba(242, 185, 93, 0.2);
-}
-.emblem-core {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
-  background: var(--nr-amber);
-  box-shadow: 0 0 28px rgba(242, 185, 93, 0.45);
-  transform: translate(-50%, -50%);
+.home-emblem svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 0 12px rgba(242, 185, 93, 0.16));
 }
 .home-content > h1 {
   margin: 19px 0 13px;
@@ -176,10 +144,12 @@
 .home-search {
   display: flex;
   width: min(560px, 100%);
+  min-height: 60px;
+  height: 60px;
   align-items: center;
-  gap: 9px;
+  gap: 12px;
   margin-top: 29px;
-  padding: 7px 8px 7px 14px;
+  padding: 8px 8px 8px 16px;
   border: 1px solid var(--nr-line-strong);
   border-radius: 16px;
   background: var(--nr-panel);
@@ -194,39 +164,24 @@
     0 15px 55px rgba(0, 0, 0, 0.22),
     0 0 0 3px var(--nr-amber-soft);
 }
-.home-search .field {
-  flex: 1 1 auto;
+.home-search .home-address-field {
+  width: auto;
+  height: 42px;
   min-width: 0;
-  gap: 0;
-}
-.home-search .field label {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-}
-.home-search .shell {
-  min-height: 40px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-}
-.home-search .shell:focus-within {
-  border: 0;
-}
-.home-search .shell > svg {
-  color: var(--nr-dim);
-}
-.home-search .input {
-  color: var(--nr-text);
-  font-size: 13px;
+  flex: 1 1 auto;
 }
 .home-search > button {
+  display: grid !important;
   width: 42px !important;
+  min-width: 42px;
   height: 42px !important;
+  min-height: 42px !important;
+  flex: 0 0 42px;
+  align-self: center;
+  place-items: center;
+  padding: 0 !important;
   border-radius: 12px !important;
+  line-height: 1;
 }
 .quick-access {
   width: min(560px, 100%);

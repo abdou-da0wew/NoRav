@@ -41,6 +41,7 @@ type config struct {
 	tlsKeyFile        string
 	engineProxyAddr   string
 	engineControlAddr string
+	publicProxyPort   string
 }
 
 type session struct {
@@ -111,13 +112,14 @@ func loadConfig() (config, error) {
 		return config{}, errors.New("NORAV_TLS_CERT_FILE and NORAV_TLS_KEY_FILE must be configured together")
 	}
 	return config{
-		uiAddr: envOr("NORAV_UI_ADDR", "0.0.0.0:7845"), proxyAddr: envOr("NORAV_PROXY_ADDR", "0.0.0.0:7846"),
+		uiAddr: envOr("NORAV_UI_ADDR", "0.0.0.0:7845"), proxyAddr: envOr("NORAV_PROXY_ADDR", "0.0.0.0:8099"),
 		webRoot: envOr("NORAV_WEB_ROOT", "./dist"), accessKey: []byte(key), cookieKey: cookieKey[:],
 		secureCookie: tlsCert != "" || strings.EqualFold(os.Getenv("NORAV_SECURE_COOKIE"), "true"),
 		metricsToken: strings.TrimSpace(os.Getenv("NORAV_METRICS_TOKEN")),
 		tlsCertFile:  tlsCert, tlsKeyFile: tlsKey,
 		engineProxyAddr:   envOr("NORAV_ENGINE_PROXY_ADDR", "127.0.0.1:17860"),
 		engineControlAddr: envOr("NORAV_ENGINE_CONTROL_ADDR", "127.0.0.1:17862"),
+		publicProxyPort:   envOr("NORAV_PUBLIC_PROXY_PORT", "8099"),
 	}, nil
 }
 

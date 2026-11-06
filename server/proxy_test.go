@@ -121,19 +121,19 @@ func TestObservabilityCorrelatesRequestsAndClientIP(t *testing.T) {
 }
 
 func TestProxyOptionsRejectForeignHostAndAcceptSameHostOrigins(t *testing.T) {
-	a := &app{cfg: config{uiAddr: "0.0.0.0:7845", proxyAddr: "0.0.0.0:7846"}}
+	a := &app{cfg: config{uiAddr: "0.0.0.0:7845", proxyAddr: "0.0.0.0:8099"}}
 	for _, tc := range []struct {
 		name       string
 		origin     string
 		wantStatus int
 	}{
-		{name: "proxy origin", origin: "http://127.0.0.1:7846", wantStatus: http.StatusNoContent},
+		{name: "proxy origin", origin: "http://127.0.0.1:8099", wantStatus: http.StatusNoContent},
 		{name: "dashboard origin", origin: "http://127.0.0.1:7845", wantStatus: http.StatusNoContent},
 		{name: "foreign host on dashboard port", origin: "http://evil.example:7845", wantStatus: http.StatusForbidden},
 		{name: "opaque origin", origin: "null", wantStatus: http.StatusForbidden},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			req := httptest.NewRequest(http.MethodOptions, "http://127.0.0.1:7846/proxy", nil)
+			req := httptest.NewRequest(http.MethodOptions, "http://127.0.0.1:8099/proxy", nil)
 			req.Header.Set("Origin", tc.origin)
 			recorder := httptest.NewRecorder()
 			a.handleProxyOptions(recorder, req)

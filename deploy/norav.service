@@ -1,0 +1,30 @@
+[Unit]
+Description=NoRav private web proxy
+After=network-online.target norav-proxy-engine.service
+Wants=network-online.target
+Requires=norav-proxy-engine.service
+
+[Service]
+Type=simple
+WorkingDirectory=/home/celestial-dev/NoRav
+ExecStart=/home/celestial-dev/NoRav/norav
+Environment=NORAV_UI_ADDR=0.0.0.0:7845
+Environment=NORAV_PROXY_ADDR=0.0.0.0:7846
+Environment=NORAV_ENGINE_PROXY_ADDR=127.0.0.1:17860
+Environment=NORAV_ENGINE_CONTROL_ADDR=127.0.0.1:17862
+Environment=NORAV_ACCESS_KEY_FILE=/home/celestial-dev/NoRav/data/access.key
+Environment=NORAV_IO_URING=on
+Restart=on-failure
+RestartSec=2
+LimitNOFILE=65535
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+ReadWritePaths=/home/celestial-dev/NoRav/data
+
+[Install]
+WantedBy=default.target

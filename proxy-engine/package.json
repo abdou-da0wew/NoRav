@@ -1,0 +1,14 @@
+{
+  "name": "norav-proxy-engine",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "bun run build && node --test dist/tests/*.test.js",
+    "start": "node dist/src/index.js"
+  },
+  "dependencies": {
+    "testcafe-hammerhead": "31.7.8"
+  }
+}

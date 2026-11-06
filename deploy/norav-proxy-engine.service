@@ -1,0 +1,35 @@
+[Unit]
+Description=NoRav TypeScript web proxy engine (Hammerhead)
+Wants=network-online.target
+After=network-online.target
+Before=norav.service
+
+[Service]
+Type=simple
+WorkingDirectory=/home/celestial-dev/NoRav
+ExecStartPre=/usr/bin/test -f /home/celestial-dev/NoRav/proxy-engine/dist/src/index.js
+ExecStart=/usr/bin/node /home/celestial-dev/NoRav/proxy-engine/dist/src/index.js
+Environment=NODE_ENV=production
+Environment=NODE_OPTIONS=--max-http-header-size=131072
+Environment=NORAV_ACCESS_KEY_FILE=/home/celestial-dev/NoRav/data/access.key
+Environment=NORAV_PUBLIC_ORIGIN=http://5.83.153.107:7846
+Environment=NORAV_ENGINE_PROXY_PORT=17860
+Environment=NORAV_ENGINE_CROSS_PORT=17861
+Environment=NORAV_ENGINE_CONTROL_PORT=17862
+Restart=on-failure
+RestartSec=2
+LimitNOFILE=65535
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+ProtectHome=read-only
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+[Install]
+WantedBy=default.target
